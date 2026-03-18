@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PILOT IT — Météo du S.I.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ===================== TOPBAR ===================== -->
+  <header class="topbar">
+    <!-- Logo -->
+    <div class="topbar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <polygon points="14,2 26,21 2,21" fill="#06B6D4" opacity=".9"/>
+        <polygon points="14,8 22,21 6,21" fill="#0A0E1A"/>
+        <circle cx="14" cy="17" r="3" fill="#06B6D4"/>
+      </svg>
+      <div>
+        <div>PILOT IT</div>
+        <div class="version">v3.3.24</div>
+      </div>
+    </div>
+
+    <!-- Nav tabs -->
+    <nav class="topbar-nav">
+      <a href="#" class="active">STATUT</a>
+      <a href="#">PARAMETRAGE</a>
+    </nav>
+
+    <!-- Center -->
+    <div class="topbar-center">
+      <div class="topbar-title">MÉTÉO DU S.I.</div>
+      <div class="topbar-datetime" id="topbar-datetime">Chargement…</div>
+    </div>
+
+    <!-- Right -->
+    <div class="topbar-right">
+      <div class="live-indicator">
+        <span class="live-dot"></span>
+        <span id="live-time">--:--:--</span>
+        LIVE
+      </div>
+
+      <!-- Bell toggle (visible < 1440px) -->
+      <button class="bell-btn" id="bell-panel-toggle" title="Alertes live" style="display:none" onclick="togglePanel()">
+        🔔
+        <span class="bell-badge" id="bell-badge">3</span>
+      </button>
+
+      <!-- Bell always visible -->
+      <button class="bell-btn" title="Alertes" style="position:relative">
+        🔔
+        <span class="bell-badge" id="bell-badge-main">3</span>
+      </button>
+
+      <div class="topbar-user">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        rlanglais
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== LAYOUT ===================== -->
+  <div class="layout">
+
+    <!-- ================ SIDEBAR ================ -->
+    <aside class="sidebar" id="sidebar">
+      <nav class="nav-section">
+        <div class="nav-item active">
+          <span class="nav-icon">🌤</span>
+          <span class="nav-label">Météo</span>
+        </div>
+        <div class="nav-item">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">Rapports</span>
+        </div>
+      </nav>
+
+      <nav class="nav-section">
+        <div class="nav-item" onclick="toggleSubnav(this)">
+          <span class="nav-icon">✅</span>
+          <span class="nav-label">Statut</span>
+          <span style="margin-left:auto;font-size:10px;color:var(--text-sec)">▾</span>
+        </div>
+        <div class="nav-sub" id="subnav-statut">
+          <div class="nav-sub-item">Équipements / Composants</div>
+          <div class="nav-sub-item">Applications</div>
+          <div class="nav-sub-item">Services Composés</div>
+          <div class="nav-sub-item">Hôtes</div>
+          <div class="nav-sub-item">Hôtes en alerte</div>
+          <div class="nav-sub-item">Composants en alerte</div>
+          <div class="nav-sub-item" style="display:flex;align-items:center;justify-content:space-between">
+            Tous les incidents
+            <span class="nav-badge" id="sidebar-badge">3</span>
+          </div>
+          <div class="nav-sub-item">Performances</div>
+          <div class="nav-sub-item">Évènements</div>
+          <div class="nav-sub-item">Historique</div>
+          <div class="nav-sub-item">File d'attente</div>
+        </div>
+      </nav>
+
+      <div class="sidebar-spacer"></div>
+
+      <div class="sidebar-collapse-btn" onclick="toggleSidebar()">
+        <span style="font-size:16px">◀</span>
+        <span>Réduire</span>
+      </div>
+    </aside>
+
+    <!-- ================ MAIN CONTENT ================ -->
+    <main class="main-content">
+
+      <!-- KPI tiles -->
+      <div class="kpi-grid">
+
+        <!-- Applications -->
+        <div class="kpi-card status-ok">
+          <div class="kpi-title">Applications</div>
+          <div class="kpi-icon">
+            <!-- Sun + cloud (OK) -->
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="24" r="10" fill="#F59E0B" opacity=".9"/>
+              <line x1="26" y1="8"  x2="26" y2="4"  stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="26" y1="44" x2="26" y2="40" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="10" y1="24" x2="6"  y2="24" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="46" y1="24" x2="42" y2="24" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="15" y1="13" x2="12" y2="10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="38" x2="37" y2="35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="37" y1="13" x2="40" y2="10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="12" y1="38" x2="15" y2="35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <rect x="26" y="35" width="28" height="16" rx="8" fill="#9CA3AF" opacity=".7"/>
+              <rect x="20" y="42" width="32" height="14" rx="7" fill="#D1D5DB"/>
+              <text x="32" y="55" text-anchor="middle" font-size="7" fill="#10B981" font-weight="bold" font-family="Inter,sans-serif">100%</text>
+            </svg>
+          </div>
+          <div class="kpi-counter">16 <span class="separator">/</span> 16</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill ok" style="width:0%" data-target="100"></div>
+          </div>
+          <div class="kpi-status-line">
+            <span class="kpi-pct ok">100%</span>
+            <span class="kpi-label">✅ OK</span>
+          </div>
+        </div>
+
+        <!-- Services -->
+        <div class="kpi-card status-ok">
+          <div class="kpi-title">Services</div>
+          <div class="kpi-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="24" r="10" fill="#F59E0B" opacity=".9"/>
+              <line x1="26" y1="8"  x2="26" y2="4"  stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="26" y1="44" x2="26" y2="40" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="10" y1="24" x2="6"  y2="24" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="46" y1="24" x2="42" y2="24" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="15" y1="13" x2="12" y2="10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="38" x2="37" y2="35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="37" y1="13" x2="40" y2="10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="12" y1="38" x2="15" y2="35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <rect x="26" y="35" width="28" height="16" rx="8" fill="#9CA3AF" opacity=".7"/>
+              <rect x="20" y="42" width="32" height="14" rx="7" fill="#D1D5DB"/>
+              <text x="32" y="55" text-anchor="middle" font-size="7" fill="#10B981" font-weight="bold" font-family="Inter,sans-serif">100%</text>
+            </svg>
+          </div>
+          <div class="kpi-counter">50 <span class="separator">/</span> 50</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill ok" style="width:0%" data-target="100"></div>
+          </div>
+          <div class="kpi-status-line">
+            <span class="kpi-pct ok">100%</span>
+            <span class="kpi-label">✅ OK</span>
+          </div>
+        </div>
+
+        <!-- Hôtes -->
+        <div class="kpi-card status-warning">
+          <div class="kpi-title">Hôtes</div>
+          <div class="kpi-icon">
+            <!-- Sun + cloud (warning) -->
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="26" cy="24" r="10" fill="#F59E0B" opacity=".9"/>
+              <line x1="26" y1="8"  x2="26" y2="4"  stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="26" y1="44" x2="26" y2="40" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="10" y1="24" x2="6"  y2="24" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="46" y1="24" x2="42" y2="24" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="15" y1="13" x2="12" y2="10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="40" y1="38" x2="37" y2="35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="37" y1="13" x2="40" y2="10" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="12" y1="38" x2="15" y2="35" stroke="#F59E0B" stroke-width="2.5" stroke-linecap="round"/>
+              <rect x="26" y="35" width="28" height="16" rx="8" fill="#F59E0B" opacity=".5"/>
+              <rect x="20" y="42" width="32" height="14" rx="7" fill="#FCD34D"/>
+              <text x="32" y="55" text-anchor="middle" font-size="7" fill="#92400E" font-weight="bold" font-family="Inter,sans-serif">95%</text>
+            </svg>
+          </div>
+          <div class="kpi-counter">20 <span class="separator">/</span> 21</div>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill warning" style="width:0%" data-target="95"></div>
+          </div>
+          <div class="kpi-status-line">
+            <span class="kpi-pct warning">95%</span>
+            <span class="kpi-label">⚠️ WARNING</span>
+          </div>
+          <a class="kpi-link" href="#">1 hôte KO →</a>
+        </div>
+
+      </div><!-- /kpi-grid -->
+
+      <!-- ======= ACTIVE ALERTS ======= -->
+      <section class="alerts-section">
+        <div class="section-header">
+          <div class="section-title">
+            🚨 ALERTES ACTIVES
+            <span class="section-count" id="alert-count">— 3 alertes</span>
+          </div>
+          <button class="btn-outline" onclick="acknowledgeAll()">Tout acquitter</button>
+        </div>
+
+        <table class="alerts-table">
+          <thead>
+            <tr>
+              <th>Sévérité</th>
+              <th>Application</th>
+              <th>Durée</th>
+              <th>Détail</th>
+            </tr>
+          </thead>
+          <tbody id="alerts-tbody">
+            <tr class="alert-row warning" data-start-min="23">
+              <td><span class="severity-badge warning"><span class="dot"></span>WARNING</span></td>
+              <td>App. de démonstration (DEMO)</td>
+              <td class="duration-cell" data-minutes="23">23 min</td>
+              <td><span class="detail-link">1 svc KO ›</span></td>
+            </tr>
+            <tr class="alert-row warning" data-start-min="35">
+              <td><span class="severity-badge warning"><span class="dot"></span>WARNING</span></td>
+              <td>Application Comptabilité (Compta)</td>
+              <td class="duration-cell" data-minutes="35">35 min</td>
+              <td><span class="detail-link">1 svc KO ›</span></td>
+            </tr>
+            <tr class="alert-row warning" data-start-min="48">
+              <td><span class="severity-badge warning"><span class="dot"></span>WARNING</span></td>
+              <td>Stockage fichiers en ligne (cloud)</td>
+              <td class="duration-cell" data-minutes="48">48 min</td>
+              <td><span class="detail-link">1 svc KO ›</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ======= HEALTHY SERVICES ======= -->
+      <section class="services-section">
+        <div class="section-header">
+          <div class="section-title ok-title">
+            ✅ SERVICES SAINS
+            <span class="section-count">— 47 / 50</span>
+          </div>
+          <div class="services-controls">
+            <label class="toggle-label">
+              <div class="toggle-switch">
+                <input type="checkbox" id="hide-ok-toggle" onchange="toggleHideOK(this)">
+                <div class="toggle-track"></div>
+                <div class="toggle-thumb"></div>
+              </div>
+              Masquer les OK
+            </label>
+            <button class="btn-outline">Exporter ↓</button>
+          </div>
+        </div>
+
+        <div class="services-grid" id="services-grid">
+          <span class="service-chip">CRM (CRM_vtiger)</span>
+          <span class="service-chip">Firewall Pfsense</span>
+          <span class="service-chip">Forums BVA</span>
+          <span class="service-chip">Gestion plannings (RIO)</span>
+          <span class="service-chip">Gestionnaire incidents</span>
+          <span class="service-chip">Infrastructure Cloud</span>
+          <span class="service-chip">Messagerie BVA</span>
+          <span class="service-chip">Obsolescence NABM</span>
+          <span class="service-chip">PILOT IT</span>
+          <span class="service-chip">Antivirus EDR</span>
+          <span class="service-chip">Backup Veeam</span>
+          <span class="service-chip">DNS / DHCP</span>
+          <span class="service-chip">Hyperviseur VMware</span>
+          <span class="service-chip">VPN SSL</span>
+          <span class="service-chip">Active Directory</span>
+          <span class="service-chip">Exchange Online</span>
+          <span class="service-chip">SharePoint</span>
+          <span class="service-chip">Teams</span>
+          <span class="service-chip">Azure DevOps</span>
+          <span class="service-chip">GitLab CI/CD</span>
+          <span class="service-chip">Prometheus</span>
+          <span class="service-chip">Grafana</span>
+          <span class="service-chip">Elasticsearch</span>
+          <span class="service-chip">Kibana</span>
+          <span class="service-chip">Nginx Proxy</span>
+          <span class="service-chip">PostgreSQL</span>
+          <span class="service-chip">Redis Cache</span>
+          <span class="service-chip">RabbitMQ</span>
+          <span class="service-chip">Kubernetes Cluster</span>
+          <span class="service-chip">Vault Secrets</span>
+          <span class="service-chip">ITSM ServiceDesk</span>
+          <span class="service-chip">Supervision SNMP</span>
+          <span class="service-chip">SolarWinds NPM</span>
+          <span class="service-chip">Zabbix Agent</span>
+          <span class="service-chip">Load Balancer HA</span>
+          <span class="service-chip">Certificates SSL</span>
+          <span class="service-chip">SFTP Transfer</span>
+          <span class="service-chip">SAP ERP</span>
+          <span class="service-chip">Power BI</span>
+          <span class="service-chip">Portail RH</span>
+          <span class="service-chip">SSO Okta</span>
+          <span class="service-chip">Parefeu UTM</span>
+          <span class="service-chip">NAS Synology</span>
+          <span class="service-chip">UPS Monitoring</span>
+          <span class="service-chip">IPAM NetBox</span>
+          <span class="service-chip">Ansible AWX</span>
+          <span class="service-chip">Terraform Cloud</span>
+        </div>
+      </section>
+
+    </main><!-- /main-content -->
+
+    <!-- ================ RIGHT PANEL ================ -->
+    <aside class="right-panel" id="right-panel">
+      <div class="panel-header">🔔 Alertes Live</div>
+
+      <div class="panel-body" id="live-alerts-list">
+        <div class="alert-live-item">
+          <div class="alert-time" id="alert-time-1">--:--</div>
+          <div class="alert-name">🟠 App. de démonstration</div>
+          <div class="alert-desc">1 service KO — DEMO</div>
+        </div>
+        <div class="alert-live-item">
+          <div class="alert-time" id="alert-time-2">--:--</div>
+          <div class="alert-name">🟠 Comptabilité</div>
+          <div class="alert-desc">1 service KO — Compta</div>
+        </div>
+        <div class="alert-live-item">
+          <div class="alert-time" id="alert-time-3">--:--</div>
+          <div class="alert-name">🟠 Stockage Cloud</div>
+          <div class="alert-desc">1 service KO — cloud</div>
+        </div>
+      </div>
+
+      <div class="panel-section-title">⏱ DERNIÈRES 24H</div>
+      <div class="sparkline-wrap">
+        <canvas class="sparkline-canvas" id="sparkline" width="280" height="60"></canvas>
+      </div>
+
+      <div class="resolution-stat">
+        <span>Résolution moy.</span>
+        <span class="resolution-value" id="resolution-avg">⌀ 12 min</span>
+      </div>
+    </aside>
+
+  </div><!-- /layout -->
+
+  <script src="js/app.js"></script>
+</body>
+</html>
